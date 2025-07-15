@@ -1,10 +1,16 @@
 import styled from "@emotion/styled";
 import BackgroundImage from "../assets/bannar-image.svg";
 import Lamp from "../assets/lamp.svg";
+import { useNavigate } from "react-router-dom";
 
 const FriendMuseum = () => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/detail"); // id는 필요 시 props로 전달
+  };
   return (
-    <Container>
+    <Container onClick={() => navigate("/homeDetail")}>
       <ImageContainer />
       <InfoRow>
         <Name>홍길동's museum</Name>
