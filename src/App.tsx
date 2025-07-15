@@ -1,17 +1,26 @@
+import { useState } from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
-import { Category } from "./components/Category";
-import { Social } from "./components/Social";
-import { Menu } from "./components/Menu";
-import { Topbar } from "./components/Topbar";
+import HomePage from "./pages/HomePage";
+import FriendMuseum from "./components/FriendMuseum";
+import Antiquity from "./components/Antiquity";
+import CreateItem from "./components/CreateItems";
+import Subject from "./components/Subject";
+import Detail from "./components/Detail";
+import HomeDetailPage from "./pages/HomeDetailPage";
+import Show from "./components/Show";
 
 function App() {
   return (
     <Routes>
-      <Route path="category" element={<Category />} />
-      <Route path="social" element={<Social />} />
-      <Route path="menu" element={<Menu />} />
-      <Route path="topbar" element={<Topbar />} />
+      <Route path="homePage" element={<HomePage />} />
+      <Route path="friend" element={<FriendMuseum />} />
+      <Route path="antiquity" element={<Antiquity />} />
+      <Route path="create" element={<CreateItem />} />
+      <Route path="subject" element={<Subject />} />
+      <Route path="detail" element={<Detail />} />
+      <Route path="homeDetail" element={<HomeDetailPage />} />
+      <Route path="show" element={<Show />} />
     </Routes>
   );
 }
