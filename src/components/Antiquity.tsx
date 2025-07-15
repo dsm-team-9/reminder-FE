@@ -1,12 +1,19 @@
 import styled from "@emotion/styled";
-import BackgroundImage from "../assets/bannar-image.svg";
-import Lamp from "../assets/lamp.svg";
 import VLine from "../assets/v-line.svg";
+import SettingSVG from "../assets/setting.svg";
 
-const Antiquity = ({ onClick }: { onClick?: () => void }) => {
+type Props = {
+  onClick?: () => void;
+  showSettings?: boolean; // 마이페이지에서는 true
+};
+
+const Antiquity = ({ onClick, showSettings = false }: Props) => {
   return (
     <Container onClick={onClick}>
-      <ImageContainer />
+      <ImageContainer>
+        {showSettings && <SettingsIcon src={SettingSVG} alt="설정" />}
+      </ImageContainer>
+
       <ContentArea>
         <CategoryDiv>
           <SubjectName>역사</SubjectName>
@@ -23,7 +30,6 @@ const Antiquity = ({ onClick }: { onClick?: () => void }) => {
 
 export default Antiquity;
 
-// 🔲 카드 컨테이너
 const Container = styled.div`
   width: 351px;
   height: 458px;
@@ -34,8 +40,8 @@ const Container = styled.div`
   box-shadow: 0px 2px 7.3px rgba(0, 0, 0, 0.25);
 `;
 
-// 🖼 상단 이미지
 const ImageContainer = styled.div`
+  position: relative;
   width: 100%;
   height: 246px;
   background-image: url(${VLine});
@@ -43,15 +49,23 @@ const ImageContainer = styled.div`
   background-position: center;
 `;
 
+const SettingsIcon = styled.img`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+`;
+
 const ContentArea = styled.div`
-  padding: 20px 20px 0 20px; // 좌우 여백 20px, 아래는 필요없음
-  margin-top: 10px; // 이미지 아래로 약간 띄움
+  padding: 20px 20px 0 20px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
 `;
 
-// 🔖 카테고리 라벨 박스
 const CategoryDiv = styled.div`
   width: fit-content;
   padding: 0 8px;
@@ -64,20 +78,17 @@ const CategoryDiv = styled.div`
   justify-content: center;
 `;
 
-// 🔖 라벨 텍스트
 const SubjectName = styled.span`
   font-size: 12px;
   font-weight: 500;
 `;
 
-// 📛 이름
 const Name = styled.p`
   font-size: 25px;
   font-weight: 600;
   margin: 0;
 `;
 
-// 📄 설명
 const Explain = styled.p`
   font-size: 18px;
   font-weight: 400;
