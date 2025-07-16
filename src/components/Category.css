@@ -23,3 +23,8 @@
   justify-content: start;
   margin-left: 10px;
 }
+.Category__subject {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
