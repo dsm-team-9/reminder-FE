@@ -1,19 +1,23 @@
+// src/components/FriendMuseum.tsx
 import styled from "@emotion/styled";
 import BackgroundImage from "../assets/bannar-image.svg";
 import Lamp from "../assets/lamp.svg";
 import { useNavigate } from "react-router-dom";
 
-const FriendMuseum = () => {
+interface Props {
+  name: string;
+}
+
+const FriendMuseum = ({ name }: Props) => {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate("/detail");
-  };
   return (
-    <Container onClick={() => navigate("/homeDetail")}>
+    <Container
+      onClick={() => navigate(`/homeDetail/${encodeURIComponent(name)}`)}
+    >
       <ImageContainer />
       <InfoRow>
-        <Name>홍길동's museum</Name>
+        <Name>{name}’s museum</Name>
         <RightBox>
           <LampIcon src={Lamp} alt="lamp" />
           <Amount>15</Amount>
@@ -33,6 +37,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   box-shadow: 0px 4px 11.7px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
 `;
 
 const ImageContainer = styled.div`
