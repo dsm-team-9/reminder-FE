@@ -1,4 +1,4 @@
-import React from "react";
+"use client";
 import styled from "@emotion/styled";
 import VLine from "../assets/v-line.svg";
 
@@ -32,8 +32,9 @@ const Container = styled.div<{ pageType?: string }>`
   flex-direction: column;
   box-shadow: 0px 2px 7.3px rgba(0, 0, 0, 0.25);
   position: relative;
-  padding: 0 23px; /* 좌우 23px 패딩 추가하여 ImageContainer와 양옆 간격 맞춤 */
+  padding: 0 23px;
   box-sizing: border-box;
+  cursor: pointer;
 `;
 
 const ImageContainer = styled.div`

@@ -1,7 +1,19 @@
+"use client";
+
 import styled from "@emotion/styled";
 import X from "../assets/x.svg";
 
-const Show = ({ onClose }: { onClose: () => void }) => {
+const Show = ({
+  onClose,
+  onConfirm,
+  isGameMode = false,
+}: {
+  onClose: () => void;
+  onConfirm?: () => void;
+  isGameMode?: boolean;
+}) => {
+  console.log("Show props:", { isGameMode, onConfirm: !!onConfirm });
+
   return (
     <Overlay>
       <Container>
@@ -11,10 +23,8 @@ const Show = ({ onClose }: { onClose: () => void }) => {
               <SubjectName>역사</SubjectName>
             </CategoryDiv>
           </LeftGroup>
-          {/* 여기 onClick 추가 */}
           <CloseIcon src={X} alt="close" onClick={onClose} />
         </TopRow>
-
         <Content>
           <ImageDiv />
           <RightBox>
@@ -27,6 +37,7 @@ const Show = ({ onClose }: { onClose: () => void }) => {
               만드는 수공예 방식이었습니다. 이 토기는 당시 사람들의 생활 방식과
               문화 수준을 보여주는 중요한 유물입니다.
             </ContentDisplay>
+            <ConfirmButton onClick={onConfirm}>확인</ConfirmButton>
           </RightBox>
         </Content>
       </Container>
@@ -36,9 +47,25 @@ const Show = ({ onClose }: { onClose: () => void }) => {
 
 export default Show;
 
-// 스타일은 유지하면서 CloseIcon에만 따로 분리
 const CloseIcon = styled.img`
   cursor: pointer;
+`;
+
+const ConfirmButton = styled.button`
+  background-color: #1c1f42;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 15px 30px;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-end;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: #2a2d5a;
+  }
 `;
 
 const Overlay = styled.div`
@@ -113,7 +140,6 @@ const ImageDiv = styled.div`
 const RightBox = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   height: 363px;
 `;
 
@@ -131,4 +157,5 @@ const ContentDisplay = styled.div`
   margin: 0;
   padding: 0;
   overflow-y: auto;
+  margin-bottom: 20px;
 `;
