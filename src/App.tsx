@@ -11,6 +11,7 @@ import Detail from "./components/Detail";
 import HomeDetailPage from "./pages/HomeDetailPage";
 import Show from "./components/Show";
 import Chat from "./components/Chat";
+import Chatting from "./pages/Chatting";
 
 // Imports from auth-page branch
 import Login from "./pages/Login";
@@ -27,7 +28,7 @@ function App() {
       <Route path="detail" element={<Detail />} />
       <Route path="homeDetail" element={<HomeDetailPage />} />
       <Route path="show" element={<Show />} />
-      <Route path="chat" element={<Chat />} />
+      <Route path="chatting" element={<Chatting />} />
 
       {/* Routes from auth-page branch */}
       <Route path="signup" element={<Signup />} />
