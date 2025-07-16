@@ -5,11 +5,13 @@ import styled from "@emotion/styled";
 import Card from "../assets/card.svg";
 import GameCard from "../components/GameCard";
 import Show from "../components/Show";
+import GameLoadingPage from "./GameLoadingPage";
 
 const Game = () => {
   const [cards, setCards] = useState([1, 2, 3, 4, 5]); // 카드 ID 배열
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
 
   const handleCardClick = (cardId: number) => {
     setSelectedCard(cardId);
@@ -18,10 +20,16 @@ const Game = () => {
 
   const handleConfirm = () => {
     if (selectedCard !== null) {
-      setCards(cards.filter((id) => id !== selectedCard));
+      const newCards = cards.filter((id) => id !== selectedCard);
+      setCards(newCards);
       setSelectedCard(null);
+      setShowModal(false);
+
+      if (newCards.length === 0) {
+        // 마지막 카드를 선택했을 때 로딩 페이지로 전환
+        setIsLoading(true);
+      }
     }
-    setShowModal(false);
   };
 
   const handleClose = () => {
@@ -48,6 +56,10 @@ const Game = () => {
 
   const currentOrder = 6 - cards.length;
 
+  if (isLoading) {
+    return <GameLoadingPage />; // 로딩 중일 때 GameLoadingPage 렌더링
+  }
+
   return (
     <Container>
       <CardImage src={Card} alt="Card" />
@@ -59,7 +71,15 @@ const Game = () => {
           <GameCard key={cardId} onClick={() => handleCardClick(cardId)} />
         ))}
       </CardRow>
-      {showModal && <Show onClose={handleClose} onConfirm={handleConfirm} />}
+      {showModal && (
+        <Overlay>
+          <Show
+            onClose={handleClose}
+            onConfirm={handleConfirm}
+            isGameMode={true}
+          />
+        </Overlay>
+      )}
     </Container>
   );
 };
@@ -97,4 +117,17 @@ const CardRow = styled.div`
   box-sizing: border-box;
   margin-top: 30px;
   justify-content: center;
+`;
+
+const Overlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.49);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
