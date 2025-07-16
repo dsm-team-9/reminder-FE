@@ -1,6 +1,11 @@
 import styled from "@emotion/styled";
+import React from "react";
 
-const Subject = () => {
+type SubjectProps = {
+  onClose: (selectedSubject?: string) => void;
+};
+
+const Subject = ({ onClose }: SubjectProps) => {
   const subjectColors: Record<string, string> = {
     수학: "#A2D5FF",
     과학: "#C9A3FF",
@@ -11,13 +16,27 @@ const Subject = () => {
 
   const subjects = Object.keys(subjectColors);
 
+  const handleSubjectClick = (subject: string) => {
+    onClose(subject);
+  };
+
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <Overlay>
+    <Overlay onClick={handleOverlayClick}>
       <ButtonWrapper>
         {subjects.map((subject) => (
-          <StyledButton key={subject} color={subjectColors[subject]}>
+          <StyledDiv
+            key={subject}
+            color={subjectColors[subject]}
+            onClick={() => handleSubjectClick(subject)}
+          >
             {subject}
-          </StyledButton>
+          </StyledDiv>
         ))}
       </ButtonWrapper>
     </Overlay>
@@ -42,16 +61,15 @@ const Overlay = styled.div`
 const ButtonWrapper = styled.div`
   display: flex;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  max-width: 500px;
 `;
 
-const StyledButton = styled.button<{ color: string }>`
+const StyledDiv = styled.div<{ color: string }>`-
   width: 94px;
   height: 44px;
   border-radius: 13px;
-  font-size: 18px;
+  font-size: 30px;
   font-weight: 500;
   background-color: ${({ color }) => color};
   display: flex;
@@ -60,4 +78,6 @@ const StyledButton = styled.button<{ color: string }>`
   color: #5f6074;
   border: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+  margin-bottom: 100px;
 `;

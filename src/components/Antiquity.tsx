@@ -4,14 +4,12 @@ import VLine from "../assets/v-line.svg";
 import SettingSVG from "../assets/setting.svg";
 import Check from "../assets/check.svg";
 import NonCheck from "../assets/non-check.svg";
-import { Chat } from "./Chat";
 
 type Props = {
   onClick?: () => void;
   showSettings?: boolean;
   onDelete?: () => void;
   onEditRequest?: () => void;
-  isChattingPage?: boolean;
 };
 
 const Antiquity = ({
@@ -19,15 +17,12 @@ const Antiquity = ({
   showSettings = false,
   onDelete,
   onEditRequest,
-  isChattingPage = false,
 }: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [showConfirmationCircle, setShowConfirmationCircle] = useState(false);
   const [isConfirmed, setIsConfirmed] = useState(false);
-  const [isChatOpen, setChatOpen] = useState(false);
 
   const modalRef = useRef<HTMLDivElement>(null);
-  const chatModalRef = useRef<HTMLDivElement>(null);
 
   const handleEdit = () => {
     setModalOpen(false);
@@ -51,88 +46,67 @@ const Antiquity = ({
     setIsConfirmed((prev) => !prev);
   };
 
-  const handleChatOpen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setChatOpen(true);
-  };
-
-  const handleChatClose = () => {
-    setChatOpen(false);
-  };
-
   useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setModalOpen(false);
-      }
-
+    const handleClickOutside = (event: MouseEvent) => {
       if (
-        chatModalRef.current &&
-        !chatModalRef.current.contains(e.target as Node)
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
       ) {
-        setChatOpen(false);
+        setModalOpen(false);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isModalOpen]);
 
   return (
-    <>
-      <Container onClick={onClick}>
-        <ImageContainer>
-          {showSettings && (
-            <>
-              <SettingsIcon
-                src={SettingSVG}
-                alt="설정"
-                onClick={handleSettingsClick}
-              />
-              {isModalOpen && (
-                <Modal ref={modalRef}>
-                  <ModalButton onClick={handleEdit}>Edit</ModalButton>
-                  <Line />
-                  <ModalButton onClick={handleDelete}>Delete</ModalButton>
-                </Modal>
-              )}
-            </>
-          )}
-
-          {showConfirmationCircle && (
-            <ConfirmationIcon
-              src={isConfirmed ? Check : NonCheck}
-              alt={isConfirmed ? "확인됨" : "확인 필요"}
-              onClick={handleCircleClick}
+    <Container onClick={onClick}>
+      <ImageContainer>
+        {showSettings && (
+          <>
+            <SettingsIcon
+              src={SettingSVG}
+              alt="설정"
+              onClick={handleSettingsClick}
             />
-          )}
-        </ImageContainer>
+            {isModalOpen && (
+              <Modal ref={modalRef}>
+                <ModalButton onClick={handleEdit}>Edit</ModalButton>
+                <Line />
+                <ModalButton onClick={handleDelete}>Delete</ModalButton>
+              </Modal>
+            )}
+          </>
+        )}
 
-        <ContentArea>
-          <CategoryDiv>
-            <SubjectName>역사</SubjectName>
-          </CategoryDiv>
-          <Name>빗살무늬 토기</Name>
-          {!isChattingPage && (
-            <Explain>
-              빗살무늬 토기는 신석기 시대에 사용된 대표적인 토기로, 겉면에
-              빗살처럼 평행하거나 ...
-            </Explain>
-          )}
-          {isChattingPage && (
-            <ChatButton onClick={handleChatOpen}>채팅하기</ChatButton>
-          )}
-        </ContentArea>
-      </Container>
+        {showConfirmationCircle && (
+          <ConfirmationIcon
+            src={isConfirmed ? Check : NonCheck}
+            alt={isConfirmed ? "확인됨" : "확인 필요"}
+            onClick={handleCircleClick}
+          />
+        )}
+      </ImageContainer>
 
-      {isChatOpen && (
-        <ModalBackdrop>
-          <ChatModal ref={chatModalRef}>
-            <Chat onClose={handleChatClose} />
-          </ChatModal>
-        </ModalBackdrop>
-      )}
-    </>
+      <ContentArea>
+        <CategoryDiv>
+          <SubjectName>역사</SubjectName>
+        </CategoryDiv>
+        <Name>빗살무늬 토기</Name>
+        <Explain>
+          빗살무늬 토기는 신석기 시대에 사용된 대표적인 토기로, 겉면에 빗살처럼
+          평행하거나 ...
+        </Explain>
+      </ContentArea>
+    </Container>
   );
 };
 
@@ -194,6 +168,9 @@ const Modal = styled.div`
 
 const ModalButton = styled.button`
   height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 18px;
   font-weight: 500;
   background: none;
@@ -201,6 +178,7 @@ const ModalButton = styled.button`
   color: #333;
   cursor: pointer;
   transition: background-color 0.2s ease;
+
   &:hover {
     background-color: #f5f4df;
   }
@@ -214,13 +192,11 @@ const Line = styled.div`
 `;
 
 const ContentArea = styled.div`
-  padding: 20px;
+  padding: 20px 20px 0 20px;
   margin-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  flex: 1;
-  position: relative;
 `;
 
 const CategoryDiv = styled.div`
@@ -250,47 +226,4 @@ const Explain = styled.p`
   font-weight: 400;
   margin: 0;
   line-height: 1.3;
-`;
-
-const ChatButton = styled.button`
-  position: absolute;
-  bottom: 30px;
-  right: 30px;
-  height: 35px;
-  width: 133px;
-  background-color: #5f6074;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  &:hover {
-    background-color: #4b4c5c;
-  }
-`;
-
-const ModalBackdrop = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 200;
-`;
-
-const ChatModal = styled.div`
-  width: min(100vw, 1245px);
-  height: min(80vh, 653px);
-  background: white;
-  border-radius: 50px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
 `;
