@@ -28,15 +28,15 @@ export const Topbar = ({ username = "사용자" }: TopbarProps) => {
           </div>
           <div
             className="topbar__text"
-            style={{ color: getColor("/homePage") }}
-            onClick={() => navigate("/homePage")}
+            style={{ color: getColor("/") }}
+            onClick={() => navigate("/")}
           >
             Home
           </div>
           <div
             className="topbar__text"
-            style={{ color: getColor("/chat") }}
-            onClick={() => navigate("/chat")}
+            style={{ color: getColor("/chatting") }}
+            onClick={() => navigate("/chatting")}
           >
             Conversation
           </div>

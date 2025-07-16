@@ -61,14 +61,17 @@ const Overlay = styled.div`
 const ButtonWrapper = styled.div`
   display: flex;
   gap: 12px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
+  padding: 20px;
 `;
 
-const StyledDiv = styled.div<{ color: string }>`-
-  width: 94px;
-  height: 44px;
-  border-radius: 13px;
+const StyledDiv = styled.div<{ color: string }>`
+  min-width: 94px;
+  height: 60px;
+  padding: 0 20px;
+  border-radius: 30px;
   font-size: 30px;
   font-weight: 500;
   background-color: ${({ color }) => color};
@@ -76,8 +79,7 @@ const StyledDiv = styled.div<{ color: string }>`-
   align-items: center;
   justify-content: center;
   color: #5f6074;
-  border: none;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  flex-shrink: 0;
-  margin-bottom: 100px;
+  cursor: pointer;
+  margin-bottom: 20px;
 `;
