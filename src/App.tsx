@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
+
 import HomePage from "./pages/HomePage";
 import FriendMuseum from "./components/FriendMuseum";
 import Antiquity from "./components/Antiquity";
@@ -10,6 +11,10 @@ import Detail from "./components/Detail";
 import HomeDetailPage from "./pages/HomeDetailPage";
 import Show from "./components/Show";
 import Chat from "./components/Chat";
+
+// Imports from auth-page branch
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 
 function App() {
   return (
@@ -23,6 +28,10 @@ function App() {
       <Route path="homeDetail" element={<HomeDetailPage />} />
       <Route path="show" element={<Show />} />
       <Route path="chat" element={<Chat />} />
+
+      {/* Routes from auth-page branch */}
+      <Route path="signup" element={<Signup />} />
+      <Route path="login" element={<Login />} />
     </Routes>
   );
 }
