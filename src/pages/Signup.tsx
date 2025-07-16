@@ -4,7 +4,7 @@ import { Global, css } from "@emotion/react";
 import Eye from "../assets/eyes-on.svg";
 import Eyeoff from "../assets/eyes-off.svg";
 
-const Login = () => {
+const Signup = () => {
   const [formData, setFormData] = useState({
     phone: "",
     nickname: "",
@@ -83,7 +83,7 @@ const Login = () => {
       />
       <Container>
         <SignupContainer>
-          <Title>로그인</Title>
+          <Title>회원가입</Title>
 
           <Form onSubmit={handleSubmit}>
             <InputGroup>
@@ -97,6 +97,24 @@ const Login = () => {
                 hasError={!!errors.phone}
               />
               {errors.phone && <ErrorText>{errors.phone}</ErrorText>}
+            </InputGroup>
+
+            <InputGroup>
+              <Label>닉네임</Label>
+              <Input
+                type="text"
+                name="nickname"
+                value={formData.nickname}
+                onChange={handleInputChange}
+                placeholder="닉네임을 입력하세요"
+                hasError={!!errors.nickname}
+              />
+              {errors.nickname && <ErrorText>{errors.nickname}</ErrorText>}
+              {!errors.nickname &&
+                formData.nickname &&
+                formData.nickname.length >= 2 && (
+                  <SuccessText>닉네임을 사용할 수 있습니다!</SuccessText>
+                )}
             </InputGroup>
 
             <InputGroup>
@@ -142,9 +160,7 @@ const Login = () => {
   );
 };
 
-export default Login;
-
-// Styled Components
+export default Signup;
 
 const Container = styled.div`
   width: 624px;
