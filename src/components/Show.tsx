@@ -11,7 +11,8 @@ const Show = ({ onClose }: { onClose: () => void }) => {
               <SubjectName>역사</SubjectName>
             </CategoryDiv>
           </LeftGroup>
-          <img src={X} alt="x" />
+          {/* 여기 onClick 추가 */}
+          <CloseIcon src={X} alt="close" onClick={onClose} />
         </TopRow>
 
         <Content>
@@ -34,6 +35,11 @@ const Show = ({ onClose }: { onClose: () => void }) => {
 };
 
 export default Show;
+
+// 스타일은 유지하면서 CloseIcon에만 따로 분리
+const CloseIcon = styled.img`
+  cursor: pointer;
+`;
 
 const Overlay = styled.div`
   position: fixed;
