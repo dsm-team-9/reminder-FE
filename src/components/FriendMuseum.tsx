@@ -7,7 +7,7 @@ const FriendMuseum = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/detail"); // id는 필요 시 props로 전달
+    navigate("/detail");
   };
   return (
     <Container onClick={() => navigate("/homeDetail")}>

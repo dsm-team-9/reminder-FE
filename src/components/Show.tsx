@@ -35,7 +35,6 @@ const Show = ({ onClose }: { onClose: () => void }) => {
 
 export default Show;
 
-// 전체 배경을 덮는 어두운 Overlay
 const Overlay = styled.div`
   position: fixed;
   top: 0;
@@ -49,7 +48,6 @@ const Overlay = styled.div`
   align-items: center;
 `;
 
-// 중앙에 떠 있는 내용 박스
 const Container = styled.div`
   width: 1641px;
   height: 705px;
