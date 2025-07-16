@@ -7,14 +7,12 @@ import Eyeoff from "../assets/eyes-off.svg";
 const Login = () => {
   const [formData, setFormData] = useState({
     phone: "",
-    nickname: "",
     password: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({
     phone: "",
-    nickname: "",
     password: "",
   });
 
@@ -36,27 +34,17 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {
       phone: "",
-      nickname: "",
       password: "",
     };
 
     if (!formData.phone) {
       newErrors.phone = "전화번호를 입력하세요";
-    } else if (!/^01[0-9]-?[0-9]{4}-?[0-9]{4}$/.test(formData.phone)) {
-      newErrors.phone = "올바른 전화번호를 입력하세요";
-    }
-
-    if (!formData.nickname) {
-      newErrors.nickname = "닉네임을 입력하세요";
-    } else if (formData.nickname.length < 2) {
-      newErrors.nickname = "닉네임은 2글자 이상이어야 합니다";
+    } else if (!/^01[0-9]-?\d{4}-?\d{4}$/.test(formData.phone)) {
+      newErrors.phone = "올바른 전화번호를 입력하세요 (예: 010-1234-5678)";
     }
 
     if (!formData.password) {
       newErrors.password = "비밀번호를 입력하세요";
-    } else if (formData.password.length < 8) {
-      newErrors.password =
-        "비밀번호는 8자리 이상 영문과 숫자를 포함해야 합니다";
     }
 
     setErrors(newErrors);
@@ -66,7 +54,7 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted:", formData);
+      console.log("Login submitted:", formData);
     }
   };
 
@@ -79,10 +67,18 @@ const Login = () => {
           *::after {
             box-sizing: border-box;
           }
+          body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f9fafb;
+          }
         `}
       />
       <Container>
-        <SignupContainer>
+        <LoginContainer>
           <Title>로그인</Title>
 
           <Form onSubmit={handleSubmit}>
@@ -123,20 +119,15 @@ const Login = () => {
                 </EyeButton>
               </PasswordContainer>
               {errors.password && <ErrorText>{errors.password}</ErrorText>}
-              {!errors.password && formData.password && (
-                <HelpText>
-                  비밀번호는 8자리 이상 영문과 숫자를 포함해야 합니다
-                </HelpText>
-              )}
             </InputGroup>
 
-            <SubmitButton type="submit">가입하기</SubmitButton>
+            <SubmitButton type="submit">로그인</SubmitButton>
           </Form>
 
           <FooterText>
-            계정이 없으신가요? <Link href="#">로그인</Link>
+            계정이 없으신가요? <Link href="#">회원가입</Link>
           </FooterText>
-        </SignupContainer>
+        </LoginContainer>
       </Container>
     </>
   );
@@ -144,28 +135,26 @@ const Login = () => {
 
 export default Login;
 
-// Styled Components
-
 const Container = styled.div`
-  width: 624px;
-  height: 664px;
+  width: 100%;
+  height: 100vh;
   background-color: #f9fafb;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
 `;
 
-const SignupContainer = styled.div`
+const LoginContainer = styled.div`
   background: white;
   border-radius: 32px;
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
-  max-width: 640px;
-  width: 100%;
-  padding: 3rem;
+  width: 624px;
+  max-width: 90%;
+  padding: 3rem 32px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-sizing: border-box;
 `;
 
 const Title = styled.h1`
@@ -180,14 +169,14 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
 `;
 
 const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
-  width: 560px;
+  width: 100%;
 `;
 
 const Label = styled.label`
@@ -195,22 +184,19 @@ const Label = styled.label`
   font-weight: 500;
   color: #374151;
   margin-bottom: 0.5rem;
-  margin-right: 480px;
+  margin-right: 420px;
 `;
 
 const Input = styled.input<{ hasError?: boolean }>`
-  width: 500px;
+  width: 100%;
   height: 48px;
   padding: 0 1rem;
-  border-radius: 8px;
+  border-radius: 13px;
   border: 1px solid ${(props) => (props.hasError ? "#ef4444" : "#e5e7eb")};
   font-size: 16px;
   background-color: #f9fafb;
   outline: none;
-
-  &:focus {
-    border-color: ${(props) => (props.hasError ? "#ef4444" : "#9000ff")};
-  }
+  box-sizing: border-box;
 
   &::placeholder {
     color: #9ca3af;
@@ -219,7 +205,7 @@ const Input = styled.input<{ hasError?: boolean }>`
 
 const PasswordContainer = styled.div`
   position: relative;
-  width: 560px;
+  width: 100%;
 `;
 
 const EyeButton = styled.button`
@@ -230,10 +216,11 @@ const EyeButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
+  z-index: 10;
 `;
 
 const SubmitButton = styled.button`
-  width: 560px;
+  width: 100%;
   height: 48px;
   background-color: #5f6074;
   color: white;
@@ -255,21 +242,10 @@ const SubmitButton = styled.button`
 `;
 
 const ErrorText = styled.p`
-  margin-top: 0.5rem;
-  font-size: 14px;
+  margin-top: 0rem;
+  font-size: 12px;
   color: #ef4444;
-`;
-
-const SuccessText = styled.p`
-  margin-top: 0.5rem;
-  font-size: 14px;
-  color: #10b981;
-`;
-
-const HelpText = styled.p`
-  margin-top: 0.5rem;
-  font-size: 14px;
-  color: #6b7280;
+  align-self: flex-start;
 `;
 
 const FooterText = styled.div`
