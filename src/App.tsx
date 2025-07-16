@@ -9,6 +9,7 @@ import Subject from "./components/Subject";
 import Detail from "./components/Detail";
 import HomeDetailPage from "./pages/HomeDetailPage";
 import Show from "./components/Show";
+import Chat from "./components/Chat";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       <Route path="detail" element={<Detail />} />
       <Route path="homeDetail" element={<HomeDetailPage />} />
       <Route path="show" element={<Show />} />
+      <Route path="chat" element={<Chat />} />
     </Routes>
   );
 }
