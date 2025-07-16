@@ -15,7 +15,7 @@ export const Menu = () => {
       setMenuTitle("museum menu");
     } else if (location.pathname === "/friend-museum") {
       setMenuTitle(`${friendNickname}'s museum`);
-    } else if (location.pathname === "/my-page") {
+    } else if (location.pathname === "/my") {
       setMenuTitle(`${myNickname}'s museum`);
     } else {
       setMenuTitle("museum menu");
