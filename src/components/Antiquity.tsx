@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import styled from "@emotion/styled";
 import VLine from "../assets/v-line.svg";
 import SettingSVG from "../assets/setting.svg";
+import Check from "../assets/check.svg";
+import NonCheck from "../assets/non-check.svg";
 
 type Props = {
   onClick?: () => void;
@@ -17,6 +19,9 @@ const Antiquity = ({
   onEditRequest,
 }: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [showConfirmationCircle, setShowConfirmationCircle] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+
   const modalRef = useRef<HTMLDivElement>(null);
 
   const handleEdit = () => {
@@ -27,11 +32,18 @@ const Antiquity = ({
   const handleDelete = () => {
     onDelete?.();
     setModalOpen(false);
+    setShowConfirmationCircle(true);
+    setIsConfirmed(false);
   };
 
   const handleSettingsClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setModalOpen((prev) => !prev);
+  };
+
+  const handleCircleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsConfirmed((prev) => !prev);
   };
 
   useEffect(() => {
@@ -73,6 +85,14 @@ const Antiquity = ({
               </Modal>
             )}
           </>
+        )}
+
+        {showConfirmationCircle && (
+          <ConfirmationIcon
+            src={isConfirmed ? Check : NonCheck}
+            alt={isConfirmed ? "확인됨" : "확인 필요"}
+            onClick={handleCircleClick}
+          />
         )}
       </ImageContainer>
 
@@ -116,6 +136,16 @@ const SettingsIcon = styled.img`
   position: absolute;
   top: 12px;
   right: 12px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 10;
+`;
+
+const ConfirmationIcon = styled.img`
+  position: absolute;
+  top: 12px;
+  left: 12px;
   width: 24px;
   height: 24px;
   cursor: pointer;
