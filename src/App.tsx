@@ -31,7 +31,7 @@ function App() {
       <Route path="/show" element={<Show onClose={dummyClose} />} />
       <Route path="/chat" element={<Chat onClose={dummyClose} />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
+      <Route path="auth/signup" element={<Signup />} />
       <Route path="my" element={<MyPage />} />
       <Route path="chatting" element={<Chatting />} />
       <Route path="artifact" element={<ArtifactDetail />} />
