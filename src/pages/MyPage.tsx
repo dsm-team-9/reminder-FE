@@ -1,13 +1,18 @@
-import { Category } from "../components/Category";
-import { Menu } from "../components/Menu";
-import { Social } from "../components/Social";
-import { Topbar } from "../components/Topbar";
+import React, { useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import BannerImage from "../assets/bannar-image.svg";
-import FriendMuseum from "../components/FriendMuseum";
+import { Category } from "../components/Category";
+import { Menu } from "../components/Menu";
+import { Topbar } from "../components/Topbar";
 import Antiquity from "../components/Antiquity";
+import Detail from "../components/Detail";
 
 const MyPage = () => {
+  const [isDetailModalOpen, setDetailModalOpen] = useState(false);
+
+  const openDetailModal = () => setDetailModalOpen(true);
+  const closeDetailModal = () => setDetailModalOpen(false);
+
   return (
     <>
       <Banner>
@@ -22,24 +27,29 @@ const MyPage = () => {
 
         <Main>
           <MuseumSection>
-            <Antiquity showSettings />
-            <Antiquity showSettings />
-            <Antiquity showSettings />
-            <Antiquity showSettings />
-            <Antiquity showSettings />
-            <Antiquity showSettings />
-            <Antiquity showSettings />
-            <Antiquity showSettings />
+            <Antiquity showSettings onEditRequest={openDetailModal} />
+            <Antiquity showSettings onEditRequest={openDetailModal} />
+            <Antiquity showSettings onEditRequest={openDetailModal} />
+            <Antiquity showSettings onEditRequest={openDetailModal} />
+            <Antiquity showSettings onEditRequest={openDetailModal} />
+            <Antiquity showSettings onEditRequest={openDetailModal} />
+            <Antiquity showSettings onEditRequest={openDetailModal} />
+            <Antiquity showSettings onEditRequest={openDetailModal} />
           </MuseumSection>
         </Main>
       </ContentArea>
+
+      {isDetailModalOpen && (
+        <ModalOverlay onClose={closeDetailModal}>
+          <Detail onClose={closeDetailModal} />
+        </ModalOverlay>
+      )}
     </>
   );
 };
 
 export default MyPage;
 
-// 🖼 배너 (상단 이미지)
 const Banner = styled.div`
   background-image: url(${BannerImage});
   background-size: cover;
@@ -52,36 +62,74 @@ const Banner = styled.div`
   flex-direction: column;
   justify-content: space-between;
 `;
-
-// 📦 콘텐츠 전체 래퍼
 const ContentArea = styled.div`
   padding: 0 64px;
   box-sizing: border-box;
   display: flex;
-  gap: 137px; /* ← CategoryWrapper와 Main 사이 가로 간격 */
+  gap: 137px;
 `;
-
-// 🏷️ Category + Social 래퍼 (왼쪽 정렬, 세로 정렬, 간격 유지)
 const CategoryWrapper = styled.div`
-  margin-top: 57px; // Banner와 Category 사이 세로 간격
-  margin-bottom: 32px; // Category와 Main(FriendMuseum) 사이 세로 간격
+  margin-top: 57px;
+  margin-bottom: 32px;
   display: flex;
   flex-direction: column;
-  gap: 5px; // Category와 Social 사이 세로 간격
+  gap: 5px;
 `;
-
-// Main 영역 (FriendMuseum 모음)
 const Main = styled.div`
   display: flex;
-  gap: 40px; // (필요시 조절 가능) Main 내부 요소 간 간격
-  margin-top: 32px; // CategoryWrapper와 Main 사이 세로 간격
+  gap: 40px;
+  margin-top: 32px;
   justify-content: flex-start;
 `;
-
-// FriendMuseum 카드 리스트 (2열 배치)
 const MuseumSection = styled.div`
   display: flex;
   flex-wrap: wrap;
-  column-gap: 81px; // FriendMuseum 카드들 사이 가로 간격
-  row-gap: 47px; // FriendMuseum 카드들 사이 세로 간격
+  column-gap: 81px;
+  row-gap: 47px;
+`;
+
+type ModalOverlayProps = {
+  children: React.ReactNode;
+  onClose: () => void;
+};
+
+const ModalOverlay = ({ children, onClose }: ModalOverlayProps) => {
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [onClose]);
+
+  return (
+    <OverlayContainer onClick={onClose}>
+      <ModalContent onClick={(e) => e.stopPropagation()}>
+        {children}
+      </ModalContent>
+    </OverlayContainer>
+  );
+};
+
+const OverlayContainer = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const ModalContent = styled.div`
+  background: white;
+  border-radius: 50px;
+  max-width: 1641px;
+  width: 100%;
+
+  padding: 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  overflow: auto;
 `;

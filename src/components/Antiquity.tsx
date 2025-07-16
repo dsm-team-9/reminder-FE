@@ -1,17 +1,79 @@
+import React, { useState, useRef, useEffect } from "react";
 import styled from "@emotion/styled";
 import VLine from "../assets/v-line.svg";
 import SettingSVG from "../assets/setting.svg";
 
 type Props = {
   onClick?: () => void;
-  showSettings?: boolean; // 마이페이지에서는 true
+  showSettings?: boolean;
+  onDelete?: () => void;
+  onEditRequest?: () => void;
 };
 
-const Antiquity = ({ onClick, showSettings = false }: Props) => {
+const Antiquity = ({
+  onClick,
+  showSettings = false,
+  onDelete,
+  onEditRequest,
+}: Props) => {
+  const [isModalOpen, setModalOpen] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const handleEdit = () => {
+    setModalOpen(false);
+    onEditRequest?.();
+  };
+
+  const handleDelete = () => {
+    onDelete?.();
+    setModalOpen(false);
+  };
+
+  const handleSettingsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setModalOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setModalOpen(false);
+      }
+    };
+
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isModalOpen]);
+
   return (
     <Container onClick={onClick}>
       <ImageContainer>
-        {showSettings && <SettingsIcon src={SettingSVG} alt="설정" />}
+        {showSettings && (
+          <>
+            <SettingsIcon
+              src={SettingSVG}
+              alt="설정"
+              onClick={handleSettingsClick}
+            />
+            {isModalOpen && (
+              <Modal ref={modalRef}>
+                <ModalButton onClick={handleEdit}>Edit</ModalButton>
+                <Line />
+                <ModalButton onClick={handleDelete}>Delete</ModalButton>
+              </Modal>
+            )}
+          </>
+        )}
       </ImageContainer>
 
       <ContentArea>
@@ -38,6 +100,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   box-shadow: 0px 2px 7.3px rgba(0, 0, 0, 0.25);
+  position: relative;
 `;
 
 const ImageContainer = styled.div`
@@ -56,6 +119,46 @@ const SettingsIcon = styled.img`
   width: 24px;
   height: 24px;
   cursor: pointer;
+  z-index: 10;
+`;
+
+const Modal = styled.div`
+  position: absolute;
+  top: 44px;
+  right: 12px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 128px;
+  z-index: 20;
+`;
+
+const ModalButton = styled.button`
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 500;
+  background: none;
+  border: none;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f5f4df;
+  }
+`;
+
+const Line = styled.div`
+  width: 80%;
+  height: 1px;
+  background-color: #5f6074;
+  margin: 0 auto;
 `;
 
 const ContentArea = styled.div`
@@ -72,7 +175,6 @@ const CategoryDiv = styled.div`
   height: 26px;
   background-color: #f5f4df;
   border-radius: 13px;
-
   display: flex;
   align-items: center;
   justify-content: center;
