@@ -24,7 +24,7 @@ const Chatting = () => {
         <Main>
           <MuseumSection>
             <Antiquity onClick={() => setIsShowOpen(true)} />
-            <Antiquity />
+            <Antiquity isChattingPage={true} />
             <Antiquity />
             <Antiquity />
             <Antiquity />
