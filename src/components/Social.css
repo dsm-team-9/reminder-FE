@@ -10,7 +10,6 @@
   height: 24px;
 }
 
-/* Social 텍스트는 항상 고정 */
 .Social__title {
   font-size: 30px;
   font-weight: 1000;
@@ -18,21 +17,18 @@
   pointer-events: none;
 }
 
-/* + 버튼을 감싸는 wrapper: 위치 기준 */
 .PlusWrapper {
   position: relative;
   width: 24px;
   height: 24px;
 }
 
-/* + 버튼 스타일 */
 .PlusIcon {
   width: 24px;
   height: 24px;
   cursor: pointer;
 }
 
-/* 플로팅 인풋 (절대 위치로 오버레이) */
 .FloatingInput {
   position: absolute;
   top: 0;
@@ -47,13 +43,37 @@
   background-color: #f5f4df;
 }
 
-/* 이름 리스트 */
-.Social__name-each {
-  display: flex;
-  justify-content: center;
-  margin-left: -4px;
-}
-
 .Social-texts {
   margin-top: 12px;
+}
+
+.Social__name {
+  padding-left: 50px;
+  width: 140px;
+  overflow: hidden;
+}
+
+.Social__name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.Social__name-each {
+  font-size: 18px;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.UnfollowText {
+  font-size: 15px;
+  color: #ff0000;
+  font-weight: 400;
+  cursor: pointer;
+  user-select: none;
 }
