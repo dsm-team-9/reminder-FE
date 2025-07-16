@@ -3,26 +3,37 @@ import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
 import Eye from "../assets/eyes-on.svg";
 import Eyeoff from "../assets/eyes-off.svg";
+import { signupUser } from "../apis/user";
+import type { SignupData } from "../apis/user";
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
-    phone: "",
-    nickname: "",
+  const [formData, setFormData] = useState<SignupData>({
+    phoneNumber: "",
+    name: "",
     password: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({
-    phone: "",
-    nickname: "",
+    phoneNumber: "",
+    name: "",
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState("");
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    let newValue = value;
+    if (name === "phoneNumber") {
+      newValue = value.replace(/\D/g, "");
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: newValue,
     }));
 
     if (errors[name as keyof typeof errors]) {
@@ -35,39 +46,40 @@ const Signup = () => {
 
   const validateForm = () => {
     const newErrors = {
-      phone: "",
-      nickname: "",
+      phoneNumber: "",
+      name: "",
       password: "",
     };
 
-    if (!formData.phone) {
-      newErrors.phone = "전화번호를 입력하세요";
-    } else if (!/^01[0-9]-?\d{4}-?\d{4}$/.test(formData.phone)) {
-      newErrors.phone = "올바른 전화번호를 입력하세요 (예: 010-1234-5678)";
-    }
-
-    if (!formData.nickname) {
-      newErrors.nickname = "닉네임을 입력하세요";
-    } else if (formData.nickname.length < 2) {
-      newErrors.nickname = "닉네임은 2글자 이상이어야 합니다";
+    if (!formData.phoneNumber) {
+      newErrors.phoneNumber = "전화번호를 입력하세요";
+    } else if (!/^\d{11}$/.test(formData.phoneNumber)) {
+      newErrors.phoneNumber = "전화번호 형식이 틀립니다";
     }
 
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    if (!formData.password) {
-      newErrors.password = "비밀번호를 입력하세요";
-    } else if (!passwordRegex.test(formData.password)) {
-      newErrors.password =
-        "비밀번호는 8자리 이상 영문과 숫자를 포함해야 합니다";
-    }
 
     setErrors(newErrors);
     return !Object.values(newErrors).some((error) => error !== "");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted:", formData);
+      setLoading(true);
+      try {
+        const response = await signupUser(formData);
+        if (response.success) {
+          alert("회원가입 성공! 로그인 페이지로 이동합니다.");
+          window.location.href = "/login";
+        } else {
+          alert(response.message || "회원가입에 실패했습니다.");
+        }
+      } catch (error: any) {
+        alert(error.message);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -82,11 +94,6 @@ const Signup = () => {
           }
           body {
             margin: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-              "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
-              "Helvetica Neue", sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-osx-font-smoothing: grayscale;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -104,26 +111,29 @@ const Signup = () => {
               <Label>전화번호</Label>
               <Input
                 type="tel"
-                name="phone"
-                value={formData.phone}
+                name="phoneNumber"
+                value={formData.phoneNumber}
                 onChange={handleInputChange}
                 placeholder="전화번호를 입력하세요"
-                hasError={!!errors.phone}
+                hasError={!!errors.phoneNumber}
+                maxLength={11}
               />
-              {errors.phone && <ErrorText>{errors.phone}</ErrorText>}
+              {errors.phoneNumber && (
+                <ErrorText>{errors.phoneNumber}</ErrorText>
+              )}
             </InputGroup>
 
             <InputGroup>
               <Label>닉네임</Label>
               <Input
                 type="text"
-                name="nickname"
-                value={formData.nickname}
+                name="name"
+                value={formData.name}
                 onChange={handleInputChange}
                 placeholder="닉네임을 입력하세요"
-                hasError={!!errors.nickname}
+                hasError={!!errors.name}
               />
-              {errors.nickname && <ErrorText>{errors.nickname}</ErrorText>}
+              {errors.name && <ErrorText>{errors.name}</ErrorText>}
             </InputGroup>
 
             <InputGroup>
@@ -140,6 +150,9 @@ const Signup = () => {
                 <EyeButton
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={
+                    showPassword ? "비밀번호 숨기기" : "비밀번호 보기"
+                  }
                 >
                   <img
                     src={showPassword ? Eye : Eyeoff}
@@ -152,7 +165,9 @@ const Signup = () => {
               {errors.password && <ErrorText>{errors.password}</ErrorText>}
             </InputGroup>
 
-            <SubmitButton type="submit">가입하기</SubmitButton>
+            <SubmitButton type="submit" disabled={loading}>
+              {loading ? "가입 중..." : "가입하기"}
+            </SubmitButton>
           </Form>
 
           <FooterText>
@@ -252,24 +267,16 @@ const EyeButton = styled.button`
 
 const SubmitButton = styled.button`
   width: 100%;
-  height: 48px;
+  height: 60px;
   background-color: #5f6074;
   color: white;
   font-weight: 600;
   border-radius: 13px;
   border: none;
   cursor: pointer;
-  margin-top: 4rem;
+  margin-top: 1.5rem;
   transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: #6b7280;
-  }
-
-  &:focus {
-    outline: 2px solid #9ca3af;
-    outline-offset: 2px;
-  }
+  font-size: 19px;
 `;
 
 const ErrorText = styled.p`

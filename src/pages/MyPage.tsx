@@ -17,7 +17,7 @@ const MyPage = () => {
     <>
       <Banner>
         <Topbar />
-        <Menu />
+        <Menu nickname="세은" isActivated={false} isMyMuseum={true} />
       </Banner>
 
       <ContentArea>

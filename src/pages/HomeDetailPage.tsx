@@ -1,4 +1,3 @@
-// pages/HomeDetailPage.tsx
 import { Category } from "../components/Category";
 import { Menu } from "../components/Menu";
 import { Topbar } from "../components/Topbar";
@@ -21,7 +20,6 @@ const HomeDetailPage = () => {
     <>
       <Banner>
         <Topbar />
-        {/* Menu에 nickname prop으로 전달 */}
         <Menu nickname={nickname || ""} />
       </Banner>
 
