@@ -1,3 +1,4 @@
+// src/pages/HomePage.tsx
 import { Category } from "../components/Category";
 import { Menu } from "../components/Menu";
 import { Social } from "../components/Social";
@@ -7,6 +8,9 @@ import BannerImage from "../assets/bannar-image.svg";
 import FriendMuseum from "../components/FriendMuseum";
 
 const HomePage = () => {
+  // 예시 팔로우 친구 목록, 추후 API 연동 가능
+  const followList = ["권세은", "김소림", "민수아", "박지민"];
+
   return (
     <>
       <Banner>
@@ -22,10 +26,9 @@ const HomePage = () => {
 
         <Main>
           <MuseumSection>
-            <FriendMuseum />
-            <FriendMuseum />
-            <FriendMuseum />
-            <FriendMuseum />
+            {followList.map((name) => (
+              <FriendMuseum key={name} name={name} />
+            ))}
           </MuseumSection>
         </Main>
       </ContentArea>
@@ -61,6 +64,8 @@ const CategoryWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 5px;
+  width: 220px;
+  flex-shrink: 0;
 `;
 
 const Main = styled.div`

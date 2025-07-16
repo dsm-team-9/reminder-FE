@@ -1,19 +1,28 @@
+// pages/HomeDetailPage.tsx
 import { Category } from "../components/Category";
 import { Menu } from "../components/Menu";
 import { Topbar } from "../components/Topbar";
 import styled from "@emotion/styled";
 import BannerImage from "../assets/bannar-image.svg";
-import Antiquity from "../components/Antiquity";
 import { useState } from "react";
 import Show from "../components/Show";
+import { useParams } from "react-router-dom";
+import Antiquity from "../components/Antiquity";
 
 const HomeDetailPage = () => {
+  const { nickname } = useParams<{ nickname: string }>();
   const [isShowOpen, setIsShowOpen] = useState(false);
+
+  const handleAntiquityClick = () => {
+    setIsShowOpen(true);
+  };
+
   return (
     <>
       <Banner>
         <Topbar />
-        <Menu />
+        {/* Menu에 nickname prop으로 전달 */}
+        <Menu nickname={nickname || ""} />
       </Banner>
 
       <ContentArea>
@@ -23,16 +32,17 @@ const HomeDetailPage = () => {
 
         <Main>
           <MuseumSection>
-            <Antiquity onClick={() => setIsShowOpen(true)} />
-            <Antiquity />
-            <Antiquity />
-            <Antiquity />
-            <Antiquity />
-            <Antiquity />
-            <Antiquity />
+            <Antiquity onClick={handleAntiquityClick} />
+            <Antiquity onClick={handleAntiquityClick} />
+            <Antiquity onClick={handleAntiquityClick} />
+            <Antiquity onClick={handleAntiquityClick} />
+            <Antiquity onClick={handleAntiquityClick} />
+            <Antiquity onClick={handleAntiquityClick} />
+            <Antiquity onClick={handleAntiquityClick} />
           </MuseumSection>
         </Main>
       </ContentArea>
+
       {isShowOpen && <Show onClose={() => setIsShowOpen(false)} />}
     </>
   );
