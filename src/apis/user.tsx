@@ -16,10 +16,16 @@ export const signupUser = async (data: SignupData): Promise<SignupResponse> => {
     const response = await instance.post("/auth/signup", data);
     return response.data;
   } catch (error: any) {
+    console.error("Signup error:", error);
+
+    if (error.code === "ERR_NETWORK") {
+      throw new Error("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+    }
+
     if (error.response) {
       throw new Error(error.response.data.message || "회원가입 실패");
     } else {
-      throw new Error("네트워크 오류;;;;;");
+      throw new Error("네트워크 오류가 발생했습니다.");
     }
   }
 };
