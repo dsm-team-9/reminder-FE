@@ -5,11 +5,14 @@ import SettingSVG from "../assets/setting.svg";
 import Check from "../assets/check.svg";
 import NonCheck from "../assets/non-check.svg";
 
+type PageType = "mypage" | "game" | "default";
+
 type Props = {
   onClick?: () => void;
   showSettings?: boolean;
   onDelete?: () => void;
   onEditRequest?: () => void;
+  pageType?: PageType;
 };
 
 const Antiquity = ({
@@ -17,6 +20,7 @@ const Antiquity = ({
   showSettings = false,
   onDelete,
   onEditRequest,
+  pageType = "default",
 }: Props) => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [showConfirmationCircle, setShowConfirmationCircle] = useState(false);
@@ -68,7 +72,7 @@ const Antiquity = ({
   }, [isModalOpen]);
 
   return (
-    <Container onClick={onClick}>
+    <Container onClick={onClick} pageType={pageType}>
       <ImageContainer>
         {showSettings && (
           <>
@@ -101,10 +105,15 @@ const Antiquity = ({
           <SubjectName>역사</SubjectName>
         </CategoryDiv>
         <Name>빗살무늬 토기</Name>
-        <Explain>
-          빗살무늬 토기는 신석기 시대에 사용된 대표적인 토기로, 겉면에 빗살처럼
-          평행하거나 ...
-        </Explain>
+
+        {pageType === "default" && (
+          <Explain>
+            빗살무늬 토기는 신석기 시대에 사용된 대표적인 토기로, 겉면에
+            빗살처럼 평행하거나 ...
+          </Explain>
+        )}
+
+        {pageType === "mypage" && <ActionButton>기록 보기</ActionButton>}
       </ContentArea>
     </Container>
   );
@@ -112,9 +121,9 @@ const Antiquity = ({
 
 export default Antiquity;
 
-const Container = styled.div`
-  width: 351px;
-  height: 458px;
+const Container = styled.div<{ pageType?: PageType }>`
+  width: ${({ pageType }) => (pageType === "game" ? "312px" : "351px")};
+  height: ${({ pageType }) => (pageType === "game" ? "479px" : "458px")};
   border-radius: 20px;
   overflow: hidden;
   display: flex;
@@ -226,4 +235,19 @@ const Explain = styled.p`
   font-weight: 400;
   margin: 0;
   line-height: 1.3;
+`;
+
+const ActionButton = styled.button`
+  margin-top: 8px;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  background-color: #f5f4df;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e6e5cc;
+  }
 `;

@@ -15,6 +15,7 @@ import Signup from "./pages/Signup";
 import MyPage from "./pages/MyPage";
 import Chatting from "./pages/Chatting";
 import ArtifactDetail from "./components/ArtifactDetail";
+import Game from "./pages/Game";
 
 function App() {
   const dummyClose = () => {};
@@ -35,6 +36,7 @@ function App() {
       <Route path="my" element={<MyPage />} />
       <Route path="chatting" element={<Chatting />} />
       <Route path="artifact" element={<ArtifactDetail />} />
+      <Route path="/game" element={<Game />} />
     </Routes>
   );
 }
