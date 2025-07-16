@@ -156,7 +156,7 @@ const Signup = () => {
           </Form>
 
           <FooterText>
-            계정이 없으신가요? <Link href="#">로그인</Link>
+            계정이 있으신가요? <Link href="/login">로그인</Link>
           </FooterText>
         </SignupContainer>
       </Container>
@@ -259,7 +259,7 @@ const SubmitButton = styled.button`
   border-radius: 13px;
   border: none;
   cursor: pointer;
-  margin-top: 0.5rem;
+  margin-top: 4rem;
   transition: background-color 0.2s ease;
 
   &:hover {
