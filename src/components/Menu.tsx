@@ -6,9 +6,15 @@ interface MenuProps {
   nickname?: string;
   isActivated?: boolean;
   isMyMuseum?: boolean;
+  onCreateClick?: () => void; // 추가
 }
 
-export const Menu = ({ nickname = "", isActivated, isMyMuseum }: MenuProps) => {
+export const Menu = ({
+  nickname = "",
+  isActivated,
+  isMyMuseum,
+  onCreateClick,
+}: MenuProps) => {
   const location = useLocation();
   const pathname = location.pathname;
 
@@ -31,7 +37,15 @@ export const Menu = ({ nickname = "", isActivated, isMyMuseum }: MenuProps) => {
 
   const renderRight = () => {
     if (isMyPage || isAntiquity || isMyMuseum) {
-      return <div className="menu__right">제작하기</div>;
+      return (
+        <div
+          className="menu__right"
+          onClick={onCreateClick} // 클릭 이벤트 연결
+          style={{ cursor: "pointer" }}
+        >
+          제작하기
+        </div>
+      );
     }
     if (isFriendDetail) {
       return (

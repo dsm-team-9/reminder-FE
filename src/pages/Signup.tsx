@@ -1,3 +1,4 @@
+// Signup.tsx
 import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { Global, css } from "@emotion/react";
@@ -20,7 +21,6 @@ const Signup = () => {
     password: "",
   });
 
-  const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,28 +57,29 @@ const Signup = () => {
       newErrors.phoneNumber = "전화번호 형식이 틀립니다";
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!formData.name) {
+      newErrors.name = "닉네임을 입력하세요";
+    }
 
     setErrors(newErrors);
     return !Object.values(newErrors).some((error) => error !== "");
   };
 
+  // Signup.tsx의 handleSubmit 함수를 수정하여 더 자세한 로깅
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (validateForm()) {
-      setLoading(true);
       try {
+        console.log("전송할 데이터:", formData); // 전송 데이터 로그
         const response = await signupUser(formData);
-        if (response.success) {
-          alert("회원가입 성공! 로그인 페이지로 이동합니다.");
-          window.location.href = "/login";
-        } else {
-          alert(response.message || "회원가입에 실패했습니다.");
-        }
+        console.log("전체 응답:", response); // 전체 응답 로그
+
+        // 응답 상태와 관계없이 로그인 페이지로 이동해보기
+        window.location.href = "/login";
       } catch (error: any) {
-        alert(error.message);
-      } finally {
-        setLoading(false);
+        console.error("상세 에러:", error);
+        console.error("에러 메시지:", error.message);
       }
     }
   };
@@ -87,9 +88,7 @@ const Signup = () => {
     <>
       <Global
         styles={css`
-          *,
-          *::before,
-          *::after {
+          * {
             box-sizing: border-box;
           }
           body {
@@ -105,7 +104,6 @@ const Signup = () => {
       <Container>
         <SignupContainer>
           <Title>회원가입</Title>
-
           <Form onSubmit={handleSubmit}>
             <InputGroup>
               <Label>전화번호</Label>
@@ -156,7 +154,7 @@ const Signup = () => {
                 >
                   <img
                     src={showPassword ? Eye : Eyeoff}
-                    alt="eye icon"
+                    alt="비밀번호 보기 아이콘"
                     width={20}
                     height={20}
                   />
@@ -165,9 +163,7 @@ const Signup = () => {
               {errors.password && <ErrorText>{errors.password}</ErrorText>}
             </InputGroup>
 
-            <SubmitButton type="submit" disabled={loading}>
-              {loading ? "가입 중..." : "가입하기"}
-            </SubmitButton>
+            <SubmitButton type="submit">가입하기</SubmitButton>
           </Form>
 
           <FooterText>
@@ -180,6 +176,8 @@ const Signup = () => {
 };
 
 export default Signup;
+
+// ------------------------ 스타일 정의 ------------------------
 
 const Container = styled.div`
   width: 100%;
@@ -200,7 +198,6 @@ const SignupContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-sizing: border-box;
 `;
 
 const Title = styled.h1`
@@ -215,7 +212,6 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  align-items: flex-start;
   width: 100%;
 `;
 
@@ -230,7 +226,6 @@ const Label = styled.label`
   font-weight: 500;
   color: #374151;
   margin-bottom: 0.5rem;
-  margin-right: 420px;
 `;
 
 const Input = styled.input<{ hasError?: boolean }>`
@@ -242,7 +237,6 @@ const Input = styled.input<{ hasError?: boolean }>`
   font-size: 16px;
   background-color: #f9fafb;
   outline: none;
-  box-sizing: border-box;
 
   &::placeholder {
     color: #9ca3af;
@@ -262,7 +256,6 @@ const EyeButton = styled.button`
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 10;
 `;
 
 const SubmitButton = styled.button`
@@ -275,15 +268,13 @@ const SubmitButton = styled.button`
   border: none;
   cursor: pointer;
   margin-top: 1.5rem;
-  transition: background-color 0.2s ease;
   font-size: 19px;
 `;
 
 const ErrorText = styled.p`
-  margin-top: 0rem;
   font-size: 12px;
   color: #ef4444;
-  align-self: flex-start;
+  margin-top: 0.25rem;
 `;
 
 const FooterText = styled.div`

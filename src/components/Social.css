@@ -8,6 +8,7 @@
 .UserIcon {
   width: 24px;
   height: 24px;
+  margin-top: 7px;
 }
 
 .Social__title {
@@ -27,6 +28,7 @@
   width: 24px;
   height: 24px;
   cursor: pointer;
+  margin-top: 3px;
 }
 
 .FloatingInput {

@@ -1,110 +1,101 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import styled from "@emotion/styled";
 import VLine from "../assets/v-line.svg";
 import SettingSVG from "../assets/setting.svg";
-import Check from "../assets/check.svg";
-import NonCheck from "../assets/non-check.svg";
 
-type Props = {
+interface CardData {
+  id: number;
+  title: string;
+  content: string;
+  category: string;
+  imageUrl: string;
+}
+
+interface Props {
+  cardData: CardData;
   onClick?: () => void;
   showSettings?: boolean;
-  onDelete?: () => void;
-  onEditRequest?: () => void;
-};
+  onDelete?: (id: number) => void;
+  onEditRequest?: (card: CardData) => void;
+  onChatClick?: (cardId: number) => void;
+}
 
 const Antiquity = ({
+  cardData,
   onClick,
   showSettings = false,
   onDelete,
   onEditRequest,
+  onChatClick,
 }: Props) => {
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [showConfirmationCircle, setShowConfirmationCircle] = useState(false);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const { id, title, content, category, imageUrl } = cardData;
 
-  const modalRef = useRef<HTMLDivElement>(null);
-
-  const handleEdit = () => {
-    setModalOpen(false);
-    onEditRequest?.();
-  };
-
-  const handleDelete = () => {
-    onDelete?.();
-    setModalOpen(false);
-    setShowConfirmationCircle(true);
-    setIsConfirmed(false);
-  };
-
-  const handleSettingsClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setModalOpen((prev) => !prev);
-  };
-
-  const handleCircleClick = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setIsConfirmed((prev) => !prev);
-  };
+  const [showActionMenu, setShowActionMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        modalRef.current &&
-        !modalRef.current.contains(event.target as Node)
-      ) {
-        setModalOpen(false);
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowActionMenu(false);
       }
     };
-
-    if (isModalOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isModalOpen]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <Container onClick={onClick}>
-      <ImageContainer>
+      <ImageContainer style={{ backgroundImage: `url(${imageUrl})` }}>
         {showSettings && (
           <>
             <SettingsIcon
               src={SettingSVG}
-              alt="설정"
-              onClick={handleSettingsClick}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowActionMenu((prev) => !prev);
+              }}
             />
-            {isModalOpen && (
-              <Modal ref={modalRef}>
-                <ModalButton onClick={handleEdit}>Edit</ModalButton>
-                <Line />
-                <ModalButton onClick={handleDelete}>Delete</ModalButton>
-              </Modal>
+            {showActionMenu && (
+              <ActionMenu ref={menuRef}>
+                <ActionButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEditRequest?.(cardData);
+                    setShowActionMenu(false);
+                  }}
+                >
+                  Edit
+                </ActionButton>
+                <Divider />
+                <ActionButton
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete?.(id);
+                    setShowActionMenu(false);
+                  }}
+                >
+                  Delete
+                </ActionButton>
+              </ActionMenu>
             )}
           </>
-        )}
-
-        {showConfirmationCircle && (
-          <ConfirmationIcon
-            src={isConfirmed ? Check : NonCheck}
-            alt={isConfirmed ? "확인됨" : "확인 필요"}
-            onClick={handleCircleClick}
-          />
         )}
       </ImageContainer>
 
       <ContentArea>
         <CategoryDiv>
-          <SubjectName>역사</SubjectName>
+          <SubjectName>{category}</SubjectName>
         </CategoryDiv>
-        <Name>빗살무늬 토기</Name>
-        <Explain>
-          빗살무늬 토기는 신석기 시대에 사용된 대표적인 토기로, 겉면에 빗살처럼
-          평행하거나 ...
-        </Explain>
+        <Name>{title}</Name>
+        <Explain>{content}</Explain>
+        <ChatButton
+          onClick={(e) => {
+            e.stopPropagation();
+            onChatClick?.(id);
+          }}
+        >
+          채팅 시작
+        </ChatButton>
       </ContentArea>
     </Container>
   );
@@ -121,6 +112,7 @@ const Container = styled.div`
   flex-direction: column;
   box-shadow: 0px 2px 7.3px rgba(0, 0, 0, 0.25);
   position: relative;
+  cursor: pointer;
 `;
 
 const ImageContainer = styled.div`
@@ -130,6 +122,7 @@ const ImageContainer = styled.div`
   background-image: url(${VLine});
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 `;
 
 const SettingsIcon = styled.img`
@@ -142,88 +135,87 @@ const SettingsIcon = styled.img`
   z-index: 10;
 `;
 
-const ConfirmationIcon = styled.img`
+const ActionMenu = styled.div`
   position: absolute;
-  top: 12px;
-  left: 12px;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
-  z-index: 10;
-`;
-
-const Modal = styled.div`
-  position: absolute;
-  top: 44px;
+  top: 40px;
   right: 12px;
   background-color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #ddd;
   border-radius: 20px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  width: 128px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 20;
+  width: 130px;
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
 `;
 
-const ModalButton = styled.button`
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 500;
+const ActionButton = styled.button`
+  flex: 1;
   background: none;
   border: none;
-  color: #333;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  font-weight: 500;
+  color: #555;
+  transition: background-color 0.2s ease-in-out;
 
   &:hover {
-    background-color: #f5f4df;
+    background-color: #f3f3f3;
   }
 `;
 
-const Line = styled.div`
-  width: 80%;
-  height: 1px;
-  background-color: #5f6074;
-  margin: 0 auto;
+const Divider = styled.div`
+  width: 1px;
+  background-color: #ddd;
 `;
 
 const ContentArea = styled.div`
-  padding: 20px 20px 0 20px;
-  margin-top: 10px;
+  padding: 14px 24px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 `;
 
 const CategoryDiv = styled.div`
-  width: fit-content;
-  padding: 0 8px;
-  height: 26px;
-  background-color: #f5f4df;
-  border-radius: 13px;
   display: flex;
   align-items: center;
-  justify-content: center;
 `;
 
 const SubjectName = styled.span`
-  font-size: 12px;
-  font-weight: 500;
+  font-weight: 700;
+  font-size: 16px;
+  color: #999;
 `;
 
-const Name = styled.p`
-  font-size: 25px;
-  font-weight: 600;
+const Name = styled.h3`
+  font-weight: 700;
+  font-size: 24px;
   margin: 0;
 `;
 
 const Explain = styled.p`
-  font-size: 18px;
-  font-weight: 400;
-  margin: 0;
-  line-height: 1.3;
+  font-weight: 500;
+  font-size: 16px;
+  color: #666;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+`;
+
+const ChatButton = styled.button`
+  margin-top: auto;
+  align-self: flex-start;
+  background-color: #5f6074;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #484a5b;
+  }
 `;

@@ -4,12 +4,28 @@ import X from "../assets/x.svg";
 import Subject from "./Subject";
 
 type DetailProps = {
+  card: {
+    id: number;
+    title: string;
+    content: string;
+    category: string;
+  };
   onClose: () => void;
+  onSubmit: (
+    cardId: number,
+    updatedContent: string,
+    updatedCategory: string,
+    updatedTitle: string
+  ) => Promise<void>;
 };
 
-const Detail = ({ onClose }: DetailProps) => {
+const Detail = ({ card, onClose, onSubmit }: DetailProps) => {
+  const [title, setTitle] = useState(card.title);
+  const [content, setContent] = useState(card.content);
+  const [selectedCategory, setSelectedCategory] = useState(
+    card.category || "역사"
+  );
   const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("역사");
 
   const handleCategoryClick = () => {
     setIsSubjectModalOpen(true);
@@ -20,6 +36,15 @@ const Detail = ({ onClose }: DetailProps) => {
       setSelectedCategory(subject);
     }
     setIsSubjectModalOpen(false);
+  };
+
+  const handleConfirm = async () => {
+    try {
+      await onSubmit(card.id, content, selectedCategory, title);
+      onClose();
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const categoryColors: Record<string, string> = {
@@ -50,13 +75,19 @@ const Detail = ({ onClose }: DetailProps) => {
       <Content>
         <ImageDiv />
         <RightBox>
-          <TitleInput placeholder="빗살무늬토기" />
-          <ContentText placeholder="빗살무늬 토기는 신석기 시대에 사용된 대표적인 토기로, 겉면에 빗살처럼 평행하거나 교차하는 무늬가 새겨진 것이 특징입니다. 주로 식량을 저장하거나 조리하는 데 사용되었으며, 한반도 전역에서 출토됩니다. 제작 방식은 손으로 빚은 후 무늬를 새기고 불에 구워 만드는 수공예 방식이었습니다. 이 토기는 당시 사람들의 생활 방식과 문화 수준을 보여주는 중요한 유물입니다." />
+          <TitleInput
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <ContentText
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
         </RightBox>
       </Content>
 
       <ButtonWrapper>
-        <FixButton>확인</FixButton>
+        <FixButton onClick={handleConfirm}>확인</FixButton>
       </ButtonWrapper>
 
       {isSubjectModalOpen && <Subject onClose={handleSubjectModalClose} />}
@@ -66,6 +97,7 @@ const Detail = ({ onClose }: DetailProps) => {
 
 export default Detail;
 
+// styled components (기존 그대로 유지)
 const Container = styled.div`
   width: 1641px;
   height: 705px;

@@ -15,6 +15,7 @@ import Signup from "./pages/Signup";
 import MyPage from "./pages/MyPage";
 import Chatting from "./pages/Chatting";
 import ArtifactDetail from "./components/ArtifactDetail";
+import Conversation from "./pages/Conversation";
 
 function App() {
   const dummyClose = () => {};
@@ -30,11 +31,12 @@ function App() {
       <Route path="/homeDetail/:nickname" element={<HomeDetailPage />} />
       <Route path="/show" element={<Show onClose={dummyClose} />} />
       <Route path="/chat" element={<Chat onClose={dummyClose} />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="auth/login" element={<Login />} />
       <Route path="auth/signup" element={<Signup />} />
       <Route path="my" element={<MyPage />} />
       <Route path="chatting" element={<Chatting />} />
       <Route path="artifact" element={<ArtifactDetail />} />
+      <Route path="conver" element={<Conversation />} />
     </Routes>
   );
 }

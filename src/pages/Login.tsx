@@ -67,14 +67,14 @@ const Login = () => {
     if (validateForm()) {
       setLoading(true);
       try {
-        const response = await loginUser(formData);
-        if (response.success && response.token) {
-          localStorage.setItem("token", response.token);
-          alert("로그인 성공!");
-          window.location.href = "/";
-        } else {
-          alert(response.message || "로그인 실패");
-        }
+        await loginUser(formData);
+        alert("로그인 성공!");
+        window.location.href = "/";
+        // if (response.success && response.token) {
+        //   // localStorage.setItem("token", response.token);
+        // } else {
+        //   alert(response.message || "로그인 실패");
+        // }
       } catch (error: any) {
         alert(error.message);
       } finally {

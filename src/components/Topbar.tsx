@@ -6,7 +6,7 @@ interface TopbarProps {
   username?: string;
 }
 
-export const Topbar = ({ username = "사용자" }: TopbarProps) => {
+export const Topbar = ({ username = "세은" }: TopbarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
 

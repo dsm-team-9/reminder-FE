@@ -2,32 +2,59 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import User from "../assets/User.svg";
 import Plus from "../assets/Plus.svg";
+import instance from "../apis/instance";
 import "./Social.css";
+
+interface User {
+  id: number;
+  name: string;
+}
 
 export const Social = () => {
   const [showInput, setShowInput] = useState(false);
   const [newName, setNewName] = useState("");
+  const [friends, setFriends] = useState<User[]>([]);
   const [selectedName, setSelectedName] = useState<string | null>(null);
   const [clickCount, setClickCount] = useState<number>(0);
   const navigate = useNavigate();
 
   const handlePlusClick = () => setShowInput(true);
   const handleBlur = () => setShowInput(false);
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setNewName(e.target.value);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && newName.trim()) {
-      alert(`입력된 이름: ${newName}`);
-      setNewName("");
-      setShowInput(false);
+      try {
+        // 1. 사용자 검색
+        const res = await instance.get("/auth/search", {
+          params: { name: newName },
+        });
+
+        const result: User[] = res.data;
+        const matched = result.find((user) => user.name === newName);
+
+        if (matched) {
+          // 2. 팔로우 요청
+          await instance.post(`/auth/${matched.id}/follow`);
+          // 3. 상태에 추가
+          setFriends((prev) => [...prev, matched]);
+          console.log(`팔로우 성공: ${matched.name}`);
+        } else {
+          console.log("사용자 없음");
+        }
+      } catch (err) {
+        console.error("검색 또는 팔로우 실패", err);
+      } finally {
+        setNewName("");
+        setShowInput(false);
+      }
     } else if (e.key === "Escape") {
       setShowInput(false);
       setNewName("");
     }
   };
 
-  const friendNames = ["일길동", "이길동", "삼길동", "사길동", "오길동"];
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setNewName(e.target.value);
 
   const handleNameClick = (name: string) => {
     if (selectedName === name) {
@@ -43,10 +70,18 @@ export const Social = () => {
     }
   };
 
-  const handleUnfollow = (e: React.MouseEvent) => {
-    e.stopPropagation(); // 클릭 버블 방지
-    setSelectedName(null);
-    setClickCount(0);
+  const handleUnfollow = async (e: React.MouseEvent, user: User) => {
+    e.stopPropagation();
+    try {
+      await instance.delete(`/auth/${user.id}/follow`);
+      setFriends((prev) => prev.filter((f) => f.id !== user.id));
+      console.log(`언팔로우 성공: ${user.name}`);
+    } catch (err) {
+      console.error("언팔로우 실패", err);
+    } finally {
+      setSelectedName(null);
+      setClickCount(0);
+    }
   };
 
   return (
@@ -67,7 +102,7 @@ export const Social = () => {
             <input
               className="FloatingInput"
               type="text"
-              placeholder="이름 입력"
+              placeholder="닉네임 입력"
               value={newName}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
@@ -80,22 +115,27 @@ export const Social = () => {
 
       <div className="Social-texts">
         <div className="Social__name">
-          {friendNames.map((name) => (
+          {friends.map((friend) => (
             <div
-              key={name}
+              key={friend.id}
               className="Social__name-row"
-              onClick={() => handleNameClick(name)}
+              onClick={() => handleNameClick(friend.name)}
             >
               <div
                 className={
                   "Social__name-each" +
-                  (selectedName === name ? " Social__name-each--selected" : "")
+                  (selectedName === friend.name
+                    ? " Social__name-each--selected"
+                    : "")
                 }
               >
-                {name}
+                {friend.name}
               </div>
-              {selectedName === name && (
-                <span className="UnfollowText" onClick={handleUnfollow}>
+              {selectedName === friend.name && (
+                <span
+                  className="UnfollowText"
+                  onClick={(e) => handleUnfollow(e, friend)}
+                >
                   팔로우 취소
                 </span>
               )}
