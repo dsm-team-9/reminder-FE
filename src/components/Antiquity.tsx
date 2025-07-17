@@ -1,101 +1,119 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import styled from "@emotion/styled";
 import VLine from "../assets/v-line.svg";
 import SettingSVG from "../assets/setting.svg";
+import Check from "../assets/check.svg";
+import NonCheck from "../assets/non-check.svg";
 
-interface CardData {
-  id: number;
-  title: string;
-  content: string;
-  category: string;
-  imageUrl: string;
-}
+type PageType = "mypage" | "game" | "default";
 
-interface Props {
-  cardData: CardData;
+type Props = {
   onClick?: () => void;
   showSettings?: boolean;
-  onDelete?: (id: number) => void;
-  onEditRequest?: (card: CardData) => void;
-  onChatClick?: (cardId: number) => void;
-}
+  onDelete?: () => void;
+  onEditRequest?: () => void;
+  pageType?: PageType;
+};
 
 const Antiquity = ({
-  cardData,
   onClick,
   showSettings = false,
   onDelete,
   onEditRequest,
-  onChatClick,
+  pageType = "default",
 }: Props) => {
-  const { id, title, content, category, imageUrl } = cardData;
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [showConfirmationCircle, setShowConfirmationCircle] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
 
-  const [showActionMenu, setShowActionMenu] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const handleEdit = () => {
+    setModalOpen(false);
+    onEditRequest?.();
+  };
+
+  const handleDelete = () => {
+    onDelete?.();
+    setModalOpen(false);
+    setShowConfirmationCircle(true);
+    setIsConfirmed(false);
+  };
+
+  const handleSettingsClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setModalOpen((prev) => !prev);
+  };
+
+  const handleCircleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsConfirmed((prev) => !prev);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setShowActionMenu(false);
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setModalOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+
+    if (isModalOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isModalOpen]);
 
   return (
-    <Container onClick={onClick}>
-      <ImageContainer style={{ backgroundImage: `url(${imageUrl})` }}>
+    <Container onClick={onClick} pageType={pageType}>
+      <ImageContainer>
         {showSettings && (
           <>
             <SettingsIcon
               src={SettingSVG}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowActionMenu((prev) => !prev);
-              }}
+              alt="설정"
+              onClick={handleSettingsClick}
             />
-            {showActionMenu && (
-              <ActionMenu ref={menuRef}>
-                <ActionButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditRequest?.(cardData);
-                    setShowActionMenu(false);
-                  }}
-                >
-                  Edit
-                </ActionButton>
-                <Divider />
-                <ActionButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete?.(id);
-                    setShowActionMenu(false);
-                  }}
-                >
-                  Delete
-                </ActionButton>
-              </ActionMenu>
+            {isModalOpen && (
+              <Modal ref={modalRef}>
+                <ModalButton onClick={handleEdit}>Edit</ModalButton>
+                <Line />
+                <ModalButton onClick={handleDelete}>Delete</ModalButton>
+              </Modal>
             )}
           </>
+        )}
+
+        {showConfirmationCircle && (
+          <ConfirmationIcon
+            src={isConfirmed ? Check : NonCheck}
+            alt={isConfirmed ? "확인됨" : "확인 필요"}
+            onClick={handleCircleClick}
+          />
         )}
       </ImageContainer>
 
       <ContentArea>
         <CategoryDiv>
-          <SubjectName>{category}</SubjectName>
+          <SubjectName>역사</SubjectName>
         </CategoryDiv>
-        <Name>{title}</Name>
-        <Explain>{content}</Explain>
-        <ChatButton
-          onClick={(e) => {
-            e.stopPropagation();
-            onChatClick?.(id);
-          }}
-        >
-          채팅 시작
-        </ChatButton>
+        <Name>빗살무늬 토기</Name>
+
+        {pageType === "default" && (
+          <Explain>
+            빗살무늬 토기는 신석기 시대에 사용된 대표적인 토기로, 겉면에
+            빗살처럼 평행하거나 ...
+          </Explain>
+        )}
+
+        {pageType === "mypage" && <ActionButton>기록 보기</ActionButton>}
       </ContentArea>
     </Container>
   );
@@ -103,16 +121,15 @@ const Antiquity = ({
 
 export default Antiquity;
 
-const Container = styled.div`
-  width: 351px;
-  height: 458px;
+const Container = styled.div<{ pageType?: PageType }>`
+  width: ${({ pageType }) => (pageType === "game" ? "312px" : "351px")};
+  height: ${({ pageType }) => (pageType === "game" ? "479px" : "458px")};
   border-radius: 20px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   box-shadow: 0px 2px 7.3px rgba(0, 0, 0, 0.25);
   position: relative;
-  cursor: pointer;
 `;
 
 const ImageContainer = styled.div`
@@ -122,7 +139,6 @@ const ImageContainer = styled.div`
   background-image: url(${VLine});
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
 `;
 
 const SettingsIcon = styled.img`
@@ -135,87 +151,103 @@ const SettingsIcon = styled.img`
   z-index: 10;
 `;
 
-const ActionMenu = styled.div`
+const ConfirmationIcon = styled.img`
   position: absolute;
-  top: 40px;
-  right: 12px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 20;
-  width: 130px;
-  height: 40px;
-  display: flex;
-  flex-direction: row;
-  overflow: hidden;
+  top: 12px;
+  left: 12px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 10;
 `;
 
-const ActionButton = styled.button`
-  flex: 1;
+const Modal = styled.div`
+  position: absolute;
+  top: 44px;
+  right: 12px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 128px;
+  z-index: 20;
+`;
+
+const ModalButton = styled.button`
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 500;
   background: none;
   border: none;
+  color: #333;
   cursor: pointer;
-  font-weight: 500;
-  color: #555;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: #f3f3f3;
+    background-color: #f5f4df;
   }
 `;
 
-const Divider = styled.div`
-  width: 1px;
-  background-color: #ddd;
+const Line = styled.div`
+  width: 80%;
+  height: 1px;
+  background-color: #5f6074;
+  margin: 0 auto;
 `;
 
 const ContentArea = styled.div`
-  padding: 14px 24px;
+  padding: 20px 20px 0 20px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 `;
 
 const CategoryDiv = styled.div`
+  width: fit-content;
+  padding: 0 8px;
+  height: 26px;
+  background-color: #f5f4df;
+  border-radius: 13px;
   display: flex;
   align-items: center;
+  justify-content: center;
 `;
 
 const SubjectName = styled.span`
-  font-weight: 700;
-  font-size: 16px;
-  color: #999;
+  font-size: 12px;
+  font-weight: 500;
 `;
 
-const Name = styled.h3`
-  font-weight: 700;
-  font-size: 24px;
+const Name = styled.p`
+  font-size: 25px;
+  font-weight: 600;
   margin: 0;
 `;
 
 const Explain = styled.p`
-  font-weight: 500;
-  font-size: 16px;
-  color: #666;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  font-size: 18px;
+  font-weight: 400;
+  margin: 0;
+  line-height: 1.3;
 `;
 
-const ChatButton = styled.button`
-  margin-top: auto;
-  align-self: flex-start;
-  background-color: #5f6074;
-  color: white;
+const ActionButton = styled.button`
+  margin-top: 8px;
+  padding: 10px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  background-color: #f5f4df;
   border: none;
-  border-radius: 12px;
-  padding: 8px 16px;
-  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
 
   &:hover {
-    background-color: #484a5b;
+    background-color: #e6e5cc;
   }
 `;
